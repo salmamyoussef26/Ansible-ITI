@@ -11,7 +11,6 @@
       apache2_module: 
         name: rewrite 
         state: present
-
       notify:
         - restart apache2
     
@@ -23,19 +22,7 @@
         state: present
       notify:
         - restart apache2
-    
-    # - name: apache2 virtualhost on port 8090
-    #   lineinfile: 
-    #     dest: /etc/apache2/sites-available/000-default.conf 
-    #     regexp: "^<VirtualHost \*:80>" 
-    #     line: "<VirtualHost *:8090>" 
-    #     state: present
-    #   notify:
-    #     - restart apache2
-
-
-
-
+  
 
     - name: create my_default_index.html file
       file:
@@ -47,6 +34,7 @@
       lineinfile:
         path: /var/www/html/my_default_index.html 
         line: "hello, apache is running on port 8090"
+
 
     - name: put my_default_index.html file in /etc/apache2/mods-available/dir.conf
       lineinfile:
@@ -62,4 +50,6 @@
       service: 
         name: apache2 
         state: restarted
+
+#**************************task 2***********************
 
