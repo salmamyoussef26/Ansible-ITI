@@ -1,0 +1,41 @@
+- name: deploy django app
+  hosts: ec2-03
+  become: true
+  tasks:
+    - name: apt update and upgrade
+      apt:
+        update_cache: yes
+        upgrade: safe
+
+    - name: Install bottle using the 'pip3.3' executable
+      pip:
+       name: bottle
+       executable: pip
+
+
+    - name: install git
+      apt:
+        name: git
+    
+    - name: pull branch master
+      git: 
+        repo: https://github.com/mahmoud254/Booster_CI_CD_Project.git
+        dest: /opt
+    
+    - name: install python requirements
+      pip: 
+        requirements: /opt/requirements.txt 
+
+    - name: Copy script.sh to /opt
+      copy:
+        src: script.sh
+        dest: /opt/script.sh
+        mode: 0755 
+    
+    - name: execute the script
+      shell: script.sh
+      args:
+        chdir: /opt
+      async: 45
+      poll: 0
+ 
