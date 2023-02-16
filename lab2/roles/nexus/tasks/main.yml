@@ -1,0 +1,77 @@
+---
+# tasks file for roles/nexus
+
+- name: yum update
+  yum:
+    name: '*'
+    state: latest
+
+- name: install wget
+  yum:
+    name: wget
+    state: latest
+
+- name: install OpenJDK 
+  yum:
+    name: java-1.8.0-openjdk.x86_64
+    state: present
+
+- name: create a directory called app
+  file:
+    path: /app
+    state: directory
+    mode: '0755'
+
+- name: cd to /app dir
+  command: cd /app
+  args:
+    chdir: /app
+    
+
+
+- name: download nexus
+  get_url:
+    url: https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+    dest: /app
+    mode: '0440'
+
+- name: untar nexus.tar.gz
+  unarchive:
+    src: /app/nexus-3.47.1-01-unix.tar.gz
+    dest: /app
+    remote_src: yes
+
+
+- name: rename nexus-3.47.1-01  to nexus
+  command: sudo mv /app/nexus-3.47.1-01 /app/nexus
+
+- name: adduser nexus
+  command: sudo adduser nexus
+
+- name: change the ownership of nexus files 
+  command: sudo chown -R nexus:nexus /app/nexus
+
+- name: change nexus data directory to nexus user.
+  command: sudo chown -R nexus:nexus /app/sonatype-work
+
+- name: uncomment run_as_user=""
+  lineinfile:
+    path: /app/nexus/bin/nexus.rc
+    regexp: '^#run_as_user=""'
+    line: run_as_user="nexus"
+    state: present
+
+- name: copy nexus.service file 
+  copy:
+    src: /home/salmamyoussef/Documents/ITI-devops/Ansible/lab2/nexus.service
+    dest: /etc/systemd/system/
+
+- name: add nexus service to boot.
+  command: sudo chkconfig nexus on
+
+- name: start nexus
+  service: 
+    name: nexus 
+    state: restarted
+
+

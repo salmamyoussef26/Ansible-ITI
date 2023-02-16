@@ -1,0 +1,14 @@
+- name: play 1 - jump host
+  hosts: all
+  become: yes
+  tasks:
+    
+    - name: jump host verification
+      ping:
+#------------------
+
+- name: play 2 - installing nexus
+  hosts: nexus
+  become: yes
+  roles:
+    - roles/nexus
